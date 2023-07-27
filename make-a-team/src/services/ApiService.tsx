@@ -5,10 +5,11 @@ import axios from "axios";
 import { UserTeamSettings } from "../models/UserTeamSettings";
 
 export class ApiService {
-  port: number = 5000;
+  url: string = "https://make-a-team-be.onrender.com";
+
   addUserIfNotExist(userId: string, name: string): Promise<boolean> {
     return axios
-      .post(`http://localhost:${this.port}/users`, null, {
+      .post(`${this.url}/users`, null, {
         params: { userId, name },
       })
       .then((res) => res.data);
@@ -19,7 +20,7 @@ export class ApiService {
     teamId: string
   ): Promise<UserTeamSettings> {
     return axios
-      .get(`http://localhost:${this.port}/userteamsettings`, {
+      .get(`${this.url}/userteamsettings`, {
         params: { userId, teamId },
       })
       .then((res) => res.data);
@@ -30,35 +31,33 @@ export class ApiService {
     teamId: string,
     ratings: UserRating[]
   ): Promise<void> {
-    return axios.post(`http://localhost:${this.port}/ratings`, ratings, {
+    return axios.post(`${this.url}/ratings`, ratings, {
       params: { userId, teamId },
     });
   }
 
   splitToTeams(teamId: string, numberOfTeams: number): Promise<TeamPlayers[]> {
     return axios
-      .post(`http://localhost:${this.port}/teams/split`, null, {
+      .post(`${this.url}/teams/split`, null, {
         params: { teamId, numberOfTeams },
       })
       .then((res) => res.data);
   }
 
   getUserTeams(userId: string): Promise<TeamDetails[]> {
-    return axios
-      .get(`http://localhost:${this.port}/teams/${userId}`, {})
-      .then((res) => {
-        let teams: TeamDetails[] = [];
-        (res.data as TeamDetails[]).forEach((team) => {
-          team.date = new Date(team.date);
-          teams.push(team);
-        });
-        return teams;
+    return axios.get(`${this.url}/teams/${userId}`, {}).then((res) => {
+      let teams: TeamDetails[] = [];
+      (res.data as TeamDetails[]).forEach((team) => {
+        team.date = new Date(team.date);
+        teams.push(team);
       });
+      return teams;
+    });
   }
 
   joinTeam(userId: string, teamCode: string): Promise<TeamDetails> {
     return axios
-      .post(`http://localhost:${this.port}/teams/join`, null, {
+      .post(`${this.url}/teams/join`, null, {
         params: { userId, teamCode },
       })
       .then((res) => {
@@ -70,7 +69,7 @@ export class ApiService {
 
   createTeam(userId: string, teamName: string, date: string): Promise<string> {
     return axios
-      .post(`http://localhost:${this.port}/teams`, null, {
+      .post(`${this.url}/teams`, null, {
         params: { userId, teamName, date },
       })
       .then((res) => {
