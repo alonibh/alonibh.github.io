@@ -26,6 +26,12 @@ export class ApiService {
       .then((res) => res.data);
   }
 
+  updateUser(userId: string, name: string): Promise<void> {
+    return axios.patch(`${this.url}/users`, null, {
+      params: { userId, name },
+    });
+  }
+
   submitRatings(
     userId: string,
     teamId: string,
@@ -53,6 +59,10 @@ export class ApiService {
       });
       return teams;
     });
+  }
+
+  getUserName(userId: string): Promise<string> {
+    return axios.get(`${this.url}/users/${userId}`, {}).then((res) => res.data);
   }
 
   joinTeam(userId: string, teamCode: string): Promise<TeamDetails> {

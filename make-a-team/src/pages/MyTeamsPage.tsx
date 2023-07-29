@@ -13,6 +13,8 @@ export default function MyTeamsPage() {
   const history = useHistory();
   const apiService = new ApiService();
   const [userTeams, setUserTeams] = useState<TeamDetails[]>([]);
+  const [name, setName] = useState<string>();
+
   const { user } = useAuth0();
   const userId = user?.sub ?? "";
 
@@ -22,6 +24,10 @@ export default function MyTeamsPage() {
         .getUserTeams(userId)
         .then((userTeams) => setUserTeams(userTeams));
   }, [userId]);
+
+  useEffect(() => {
+    apiService.getUserName(userId).then((name) => setName(name));
+  }, []);
 
   function joinTeam(teamCode: string) {
     apiService.joinTeam(userId, teamCode).then((importedTeam) => {
@@ -50,7 +56,7 @@ export default function MyTeamsPage() {
 
   return (
     <>
-      <h1>Hello, {user?.name}</h1>
+      <h1>Hello, {name}</h1>
       <div className="card">
         <div className="flex flex-wrap card-container blue-container">
           {teamCards}

@@ -9,38 +9,54 @@ import RatingPage from "./pages/RatingPage";
 import LoginPage from "./pages/LoginPage";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ApiService } from "./services/ApiService";
-import Popup from "./components/popup/Popup";
+import SetNameForm from "./components/SetNameForm";
+import { useState } from "react";
 
-function App() {
+export default function App() {
+  const [isNew, setIsNew] = useState<boolean | undefined>(undefined);
+
   const apiService = new ApiService();
-
   const { isAuthenticated, isLoading, user } = useAuth0();
+
+  function setName(name: string) {
+    apiService.updateUser(user?.sub!, name).then(() => {
+      setIsNew(false);
+    });
+  }
+
   if (isLoading) {
     return <>Loading...</>;
   } else if (!isAuthenticated) {
     return <LoginPage />;
   } else if (user?.sub) {
-    // TODO remove
-    console.log(JSON.stringify(user));
+    //console.log(JSON.stringify(user));
 
-    apiService.addUserIfNotExist(user?.sub, user?.name ?? "").then((isNew) => {
-      if (isNew) {
-        // TODO ask user for its name, and save it
-      }
-    });
-    return (
-      <>
-        <BrowserRouter>
-          <Switch>
-            <Route exact={true} path="/" component={MyTeamsPage} />
-            <Route path="/myTeams/:teamId" component={RatingPage} />
-          </Switch>
-        </BrowserRouter>
-      </>
-    );
+    if (isNew == undefined) {
+      apiService
+        .addUserIfNotExist(user?.sub, user?.name ?? "")
+        .then((isNewRes) => {
+          setIsNew(isNewRes);
+        });
+    } else if (isNew) {
+      return (
+        <>
+          <SetNameForm name={user?.name} handleSubmit={setName} />
+        </>
+      );
+    } else {
+      return (
+        <>
+          <BrowserRouter>
+            <Switch>
+              <Route exact={true} path="/" component={MyTeamsPage} />
+              <Route path="/myTeams/:teamId" component={RatingPage} />
+            </Switch>
+          </BrowserRouter>
+        </>
+      );
+    }
   } else {
     return <>Error</>;
   }
+  return <></>;
 }
-
-export default App;
