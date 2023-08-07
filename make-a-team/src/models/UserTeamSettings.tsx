@@ -4,5 +4,4 @@ export interface UserTeamSettings {
   ratings: UserRating[];
   name: string;
   isUserAdminOfTeam: boolean;
-  unsubmittedPlayersCount: number;
 }

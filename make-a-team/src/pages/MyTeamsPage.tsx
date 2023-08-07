@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TeamDetails } from "../models/TeamDetails";
 import { ApiService } from "../services/ApiService";
 import JoinTeamForm from "../components/JoinTeamForm";
@@ -6,8 +6,8 @@ import TeamCardLink from "../components/TeamCardLink";
 import NewTeamForm from "../components/NewTeamForm";
 import { useHistory } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton";
-import { useAuth0 } from "@auth0/auth0-react";
 import styled from "styled-components";
+import { UserInfoContext } from "../contexts/UserInfoContext";
 
 export default function MyTeamsPage() {
   const history = useHistory();
@@ -15,29 +15,32 @@ export default function MyTeamsPage() {
   const [userTeams, setUserTeams] = useState<TeamDetails[]>([]);
   const [name, setName] = useState<string>();
 
-  const { user } = useAuth0();
-  const userId = user?.sub ?? "";
+  const userInfo = useContext(UserInfoContext);
 
   useEffect(() => {
-    userId &&
+    userInfo?.id &&
       apiService
-        .getUserTeams(userId)
+        .getUserTeams(userInfo?.id)
         .then((userTeams) => setUserTeams(userTeams));
-  }, [userId]);
+  }, [userInfo?.id]);
 
   useEffect(() => {
-    apiService.getUserName(userId).then((name) => setName(name));
+    apiService.getUserName(userInfo?.id!).then((name) => setName(name));
   }, []);
 
   function joinTeam(teamCode: string) {
-    apiService.joinTeam(userId, teamCode).then((importedTeam) => {
-      setUserTeams([...userTeams, importedTeam]);
+    apiService.isTeamMember(userInfo?.id!, teamCode).then((res) => {
+      if (res.isTeamMember) {
+        history.push(`/myTeams/${res.teamId}`);
+      } else {
+        history.push(`/myTeams/${res.teamId}/join`);
+      }
     });
   }
 
   function createNewTeam(teamName: string, date: string) {
-    apiService.createTeam(userId, teamName, date).then((teamId) => {
-      history.push(`/myTeams/${teamId}`);
+    apiService.createTeam(userInfo?.id!, teamName, date).then((teamId) => {
+      history.push(`/myTeams/${teamId}/edit`);
     });
   }
 

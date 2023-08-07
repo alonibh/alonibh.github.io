@@ -7,16 +7,21 @@ import "primeflex/primeflex.css";
 import MyTeamsPage from "./pages/MyTeamsPage";
 import RatingPage from "./pages/RatingPage";
 import LoginPage from "./pages/LoginPage";
-import { useAuth0 } from "@auth0/auth0-react";
+import { User, useAuth0 } from "@auth0/auth0-react";
 import { ApiService } from "./services/ApiService";
 import SetNameForm from "./components/SetNameForm";
 import { useState } from "react";
+import EditTeamPage from "./pages/EditTeamPage";
+import { UserInfoContext, UserInfo } from "./contexts/UserInfoContext";
+import JoinTeamForm from "./components/JoinTeamForm";
+import JoinTeamPage from "./pages/JoinTeamPage";
 
 export default function App() {
   const [isNew, setIsNew] = useState<boolean | undefined>(undefined);
 
   const apiService = new ApiService();
   const { isAuthenticated, isLoading, user } = useAuth0();
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>();
 
   function setName(name: string) {
     apiService.updateUser(user?.sub!, name).then(() => {
@@ -44,14 +49,24 @@ export default function App() {
         </>
       );
     } else {
+      if (!userInfo) {
+        apiService.getUserName(user?.sub).then((name) => {
+          setUserInfo({ id: user.sub!, name });
+        });
+      }
+
       return (
         <>
-          <BrowserRouter>
-            <Switch>
-              <Route exact={true} path="/" component={MyTeamsPage} />
-              <Route path="/myTeams/:teamId" component={RatingPage} />
-            </Switch>
-          </BrowserRouter>
+          <UserInfoContext.Provider value={userInfo}>
+            <BrowserRouter>
+              <Switch>
+                <Route exact={true} path="/" component={MyTeamsPage} />
+                <Route path="/myTeams/:teamId/edit" component={EditTeamPage} />
+                <Route path="/myTeams/:teamId/join" component={JoinTeamPage} />
+                <Route path="/myTeams/:teamId" component={RatingPage} />
+              </Switch>
+            </BrowserRouter>
+          </UserInfoContext.Provider>
         </>
       );
     }

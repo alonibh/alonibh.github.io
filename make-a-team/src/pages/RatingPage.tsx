@@ -9,6 +9,7 @@ import { UserTeamSettings } from "../models/UserTeamSettings";
 import TeamsList from "../components/TeamsList";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "styled-components";
+import { UserInfoContext } from "../contexts/UserInfoContext";
 
 interface urlParams {
   teamId: string;
@@ -17,14 +18,13 @@ interface urlParams {
 export default function RatingPage() {
   const { teamId } = useParams<urlParams>();
   const apiService = new ApiService();
-  const { user } = useAuth0();
-  const userId = user?.sub ?? "";
+
+  const userInfo = useContext(UserInfoContext);
 
   const [teamSettings, setTeamSettings] = useState<UserTeamSettings>({
     isUserAdminOfTeam: false,
     name: "",
     ratings: [],
-    unsubmittedPlayersCount: 0,
   });
   const [isSubmitting, setSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function RatingPage() {
 
   useEffect(() => {
     // TODO - add error handling for all http requests
-    apiService.getUserTeamSettings(userId, teamId).then((res) => {
+    apiService.getUserTeamSettings(userInfo?.id!, teamId).then((res) => {
       setTeamSettings(res);
     });
   }, []);
@@ -44,15 +44,17 @@ export default function RatingPage() {
   function onSubmitRatingsClicked(numOfTeams: number) {
     setSubmitting(true);
     // TODO - make all of the api calls async
-    apiService.submitRatings(userId, teamId, teamSettings.ratings).then(() => {
-      setSubmitting(false);
-      if (teamSettings.isUserAdminOfTeam) {
-        apiService.splitToTeams(teamId, numOfTeams).then((teams) => {
-          setTeams(teams);
-          togglePopup();
-        });
-      }
-    });
+    apiService
+      .submitRatings(userInfo?.id!, teamId, teamSettings.ratings)
+      .then(() => {
+        setSubmitting(false);
+        if (teamSettings.isUserAdminOfTeam) {
+          apiService.splitToTeams(teamId, numOfTeams).then((teams) => {
+            setTeams(teams);
+            togglePopup();
+          });
+        }
+      });
   }
 
   const setRating = (userId: Number, rating: number) => {
@@ -87,7 +89,6 @@ export default function RatingPage() {
           isAdmin={teamSettings.isUserAdminOfTeam}
           isSubmitting={isSubmitting}
           onSubmitRatingsClicked={onSubmitRatingsClicked}
-          unsubmittedPlayersCount={teamSettings.unsubmittedPlayersCount}
         ></RatingSubmission>
         {isOpen && (
           <Popup

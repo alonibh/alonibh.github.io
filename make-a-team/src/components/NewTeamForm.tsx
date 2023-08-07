@@ -4,10 +4,6 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import styled from "styled-components";
 
-interface NewTeamProps {
-  handleSubmit: (teamName: string, date: string) => void;
-}
-
 const Flex = styled.div`
   display: flex;
   flex-direction: column;
@@ -15,6 +11,10 @@ const Flex = styled.div`
 const FlexItem = styled.div`
   margin-bottom: 1rem;
 `;
+
+interface NewTeamProps {
+  handleSubmit: (teamName: string, date: string) => void;
+}
 
 export default function NewTeamForm(props: NewTeamProps) {
   const [teamName, setTeamName] = useState<string>("");
