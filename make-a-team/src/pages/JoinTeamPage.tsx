@@ -18,7 +18,7 @@ export default function JoinTeamPage() {
   const apiService = new ApiService();
 
   useEffect(() => {
-    apiService.getTeamPlayers(teamId).then((res) => {
+    apiService.getUnselectedTeamPlayers(teamId).then((res) => {
       setTeamName(res.name);
       setPlayersNicknames(res.players);
     });

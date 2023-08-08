@@ -10,17 +10,25 @@ export class ApiService {
   url: string = "https://make-a-team-be.onrender.com";
   port: number = 8080;
 
-  isTeamMember(id: string, teamCode: string): Promise<IsTeamMemberResponse> {
+  isTeamMember(
+    userId: string,
+    teamCode: string
+  ): Promise<IsTeamMemberResponse> {
     return new Promise((resolve) =>
       resolve({ isTeamMember: false, teamId: "123" })
     );
   }
 
-  addPlayersToTeam(teamId: string, playersNicknames: string[]): Promise<void> {
+  addPlayersToTeam(
+    teamId: string,
+    adminId: string,
+    adminName: string,
+    playersNicknames: string[]
+  ): Promise<void> {
     return new Promise((resolve) => resolve());
   }
 
-  getTeamPlayers(teamId: string): Promise<TeamPlayersResponse> {
+  getUnselectedTeamPlayers(teamId: string): Promise<TeamPlayersResponse> {
     return new Promise((resolve) =>
       resolve({ name: "Rishon1", players: ["player1", "player2", "player3"] })
     );

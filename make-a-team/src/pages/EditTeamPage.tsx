@@ -30,7 +30,12 @@ export default function EditTeamPage() {
 
   const handleSubmit = () => {
     apiService
-      .addPlayersToTeam(teamId, [userInfo?.name!, ...playersNicknames])
+      .addPlayersToTeam(
+        teamId,
+        userInfo?.id!,
+        userInfo?.name!,
+        playersNicknames
+      )
       .then(() => {
         history.push(`/myTeams/${teamId}`);
       });
