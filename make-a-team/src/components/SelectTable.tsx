@@ -18,7 +18,7 @@ export default function SelectTable(props: SelectTableProps) {
       <Button
         label="Select"
         className="p-button-secondary"
-        onClick={() => props.handleSelect(rowData.name)}
+        onClick={() => props.handleSelect(rowData.nickname)}
       />
     );
   };

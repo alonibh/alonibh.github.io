@@ -25,7 +25,7 @@ export default function JoinTeamPage() {
   }, []);
 
   const handleSelect = (selectedNickname: string) => {
-    apiService.joinTeam(userInfo?.id!, teamId, selectedNickname).then(() => {
+    apiService.joinTeam(teamId, userInfo?.id!, selectedNickname).then(() => {
       history.push(`/myTeams/${teamId}`);
     });
   };

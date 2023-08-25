@@ -1,5 +1,4 @@
 export interface UserRating {
-  userId: number;
-  name: string;
+  subjectNickname: string;
   rating: number;
 }

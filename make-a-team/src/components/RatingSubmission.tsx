@@ -6,7 +6,8 @@ import { useState } from "react";
 interface RatingSubmissionProps {
   isAdmin: boolean;
   isSubmitting: boolean;
-  onSubmitRatingsClicked: (numOfTeams: number) => void;
+  onSubmitRatingsClicked: () => void;
+  onMakeATeamClicked: (numOfTeams: number) => void;
 }
 
 export default function RatingSubmission(props: RatingSubmissionProps) {
@@ -15,15 +16,13 @@ export default function RatingSubmission(props: RatingSubmissionProps) {
   if (props.isAdmin) {
     return (
       <>
-        {/* <div className="col-12 md:col-3">
-          <Message
-            severity="warn"
-            text={
-              props.unsubmittedPlayersCount +
-              " players hasn't submitted ratings"
-            }
-          />
-        </div> */}
+        <Button
+          label="Submit"
+          icon="pi pi-check"
+          loading={props.isSubmitting}
+          onClick={() => props.onSubmitRatingsClicked()}
+        />
+
         <div className="field col-12 md:col-3">
           <label htmlFor="integeronly">Number of teams</label>
           <InputNumber
@@ -36,7 +35,7 @@ export default function RatingSubmission(props: RatingSubmissionProps) {
           label="Make a team"
           icon="pi pi-check"
           loading={props.isSubmitting}
-          onClick={() => props.onSubmitRatingsClicked(numOfTeams)}
+          onClick={() => props.onMakeATeamClicked(numOfTeams)}
         />
       </>
     );
@@ -46,7 +45,7 @@ export default function RatingSubmission(props: RatingSubmissionProps) {
         label="Submit"
         icon="pi pi-check"
         loading={props.isSubmitting}
-        onClick={() => props.onSubmitRatingsClicked(0)}
+        onClick={() => props.onSubmitRatingsClicked()}
       />
     );
   }

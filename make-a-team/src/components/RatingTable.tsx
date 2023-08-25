@@ -5,7 +5,7 @@ import { UserRating } from "../models/UserRating";
 
 interface RatingTableProps {
   ratings: UserRating[];
-  onRatingsChanged: (userId: Number, rating: number) => void;
+  onRatingsChanged: (subjectNickname: string, rating: number) => void;
 }
 
 export default function RatingTable(props: RatingTableProps) {
@@ -13,7 +13,9 @@ export default function RatingTable(props: RatingTableProps) {
     return (
       <Rating
         value={rowData.rating}
-        onChange={(e) => props.onRatingsChanged(rowData.userId, e.value ?? 0)}
+        onChange={(e) =>
+          props.onRatingsChanged(rowData.subjectNickname, e.value ?? 0)
+        }
       />
     );
   };
@@ -22,7 +24,7 @@ export default function RatingTable(props: RatingTableProps) {
     <div className="datatable-templating-demo">
       <div className="card">
         <DataTable value={props.ratings} responsiveLayout="scroll">
-          <Column field="name" header="Player"></Column>
+          <Column field="subjectNickname" header="Player"></Column>
           <Column
             field="rating"
             header="Rating"

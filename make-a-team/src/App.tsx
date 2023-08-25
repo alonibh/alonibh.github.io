@@ -13,7 +13,6 @@ import SetNameForm from "./components/SetNameForm";
 import { useState } from "react";
 import EditTeamPage from "./pages/EditTeamPage";
 import { UserInfoContext, UserInfo } from "./contexts/UserInfoContext";
-import JoinTeamForm from "./components/JoinTeamForm";
 import JoinTeamPage from "./pages/JoinTeamPage";
 
 export default function App() {

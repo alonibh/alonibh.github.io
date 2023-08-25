@@ -29,16 +29,10 @@ export default function EditTeamPage() {
   };
 
   const handleSubmit = () => {
-    apiService
-      .addPlayersToTeam(
-        teamId,
-        userInfo?.id!,
-        userInfo?.name!,
-        playersNicknames
-      )
-      .then(() => {
-        history.push(`/myTeams/${teamId}`);
-      });
+    // TODO must enfore no duplicates
+    apiService.addPlayersToTeam(teamId, playersNicknames).then(() => {
+      history.push(`/myTeams/${teamId}`);
+    });
   };
 
   return (

@@ -8,73 +8,61 @@ import { TeamPlayersResponse } from "../models/TeamPlayersResponse";
 
 export class ApiService {
   url: string = "https://make-a-team-be.onrender.com";
-  port: number = 8080;
+  port: number = 5000;
 
   isTeamMember(
     userId: string,
     teamCode: string
   ): Promise<IsTeamMemberResponse> {
-    return new Promise((resolve) =>
-      resolve({ isTeamMember: false, teamId: "123" })
-    );
+    return axios
+      .get(`http://localhost:${this.port}/users/${userId}/teamMember`, {
+        params: { teamCode },
+      })
+      .then((res) => res.data);
   }
 
-  addPlayersToTeam(
-    teamId: string,
-    adminId: string,
-    adminName: string,
-    playersNicknames: string[]
-  ): Promise<void> {
-    return new Promise((resolve) => resolve());
+  addPlayersToTeam(teamId: string, playersNicknames: string[]): Promise<void> {
+    return axios
+      .post(
+        `http://localhost:${this.port}/teams/${teamId}/addPlayers`,
+        playersNicknames
+      )
+      .then((res) => res.data);
   }
 
   getUnselectedTeamPlayers(teamId: string): Promise<TeamPlayersResponse> {
-    return new Promise((resolve) =>
-      resolve({ name: "Rishon1", players: ["player1", "player2", "player3"] })
-    );
+    return axios
+      .get(`http://localhost:${this.port}/teams/${teamId}/unselectedPlayers`, {
+        params: {},
+      })
+      .then((res) => res.data);
   }
 
   getTeamName(teamId: string): Promise<string> {
-    return new Promise((resolve) => resolve("Sunday in Rishon"));
+    return axios
+      .get(`http://localhost:${this.port}/teams/${teamId}/name`, {
+        params: {},
+      })
+      .then((res) => res.data);
   }
-
-  // addUserIfNotExist(userId: string, name: string): Promise<boolean> {
-  //   return axios
-  //     .post(`http://localhost:${this.port}/users`, null, {
-  //       params: { userId, name },
-  //     })
-  //     .then((res) => res.data);
-  // }
 
   addUserIfNotExist(userId: string, name: string): Promise<boolean> {
-    return new Promise((resolve) => resolve(false));
+    return axios
+      .post(`http://localhost:${this.port}/users`, null, {
+        params: { userId, name },
+      })
+      .then((res) => res.data);
   }
-
-  // getUserTeamSettings(
-  //   userId: string,
-  //   teamId: string
-  // ): Promise<UserTeamSettings> {
-  //   return axios
-  //     .get(`http://localhost:${this.port}/userteamsettings`, {
-  //       params: { userId, teamId },
-  //     })
-  //     .then((res) => res.data);
-  // }
 
   getUserTeamSettings(
     userId: string,
     teamId: string
   ): Promise<UserTeamSettings> {
-    let userTeamSettings: UserTeamSettings = {
-      isUserAdminOfTeam: true,
-      name: "Sunday in Rishon",
-      ratings: [
-        { name: "Alon", rating: 5, userId: 123 },
-        { name: "John", rating: 4, userId: 423 },
-        { name: "Dani", rating: 3, userId: 523 },
-      ],
-    };
-    return new Promise((resolve) => resolve(userTeamSettings));
+    return axios
+      .get(`http://localhost:${this.port}/users/${userId}/teamSettings`, {
+        params: { userId, teamId },
+      })
+      .then((res) => res.data);
   }
 
   updateUser(userId: string, name: string): Promise<void> {
@@ -83,94 +71,60 @@ export class ApiService {
     });
   }
 
-  submitRatings(
-    userId: string,
-    teamId: string,
-    ratings: UserRating[]
-  ): Promise<void> {
+  submitRatings(userId: string, ratings: UserRating[]): Promise<void> {
     return axios.post(`http://localhost:${this.port}/ratings`, ratings, {
-      params: { userId, teamId },
+      params: { userId },
     });
   }
 
   splitToTeams(teamId: string, numberOfTeams: number): Promise<TeamPlayers[]> {
     return axios
-      .post(`http://localhost:${this.port}/teams/split`, null, {
-        params: { teamId, numberOfTeams },
+      .post(`http://localhost:${this.port}/teams/${teamId}/split`, null, {
+        params: { numberOfTeams },
       })
       .then((res) => res.data);
   }
 
-  // getUserTeams(userId: string): Promise<TeamDetails[]> {
-  //   return axios
-  //     .get(`http://localhost:${this.port}/teams/${userId}`, {})
-  //     .then((res) => {
-  //       let teams: TeamDetails[] = [];
-  //       (res.data as TeamDetails[]).forEach((team) => {
-  //         team.date = new Date(team.date);
-  //         teams.push(team);
-  //       });
-  //       return teams;
-  //     });
-  // }
-
   getUserTeams(userId: string): Promise<TeamDetails[]> {
-    return new Promise((resolve) => {
-      let teams: TeamDetails[] = [
-        {
-          id: "123456",
-          code: "111111",
-          date: new Date("11/10/2023"),
-          name: "Rishon1",
-          playersCount: 5,
-        },
-        {
-          id: "234567",
-          code: "222222",
-          date: new Date("11/10/2023"),
-          name: "Rishon2",
-          playersCount: 6,
-        },
-      ];
-      resolve(teams);
-    });
+    return axios
+      .get(`http://localhost:${this.port}/teams/${userId}`, {})
+      .then((res) => {
+        let teams: TeamDetails[] = [];
+        (res.data as TeamDetails[]).forEach((team) => {
+          team.date = new Date(team.date);
+          teams.push(team);
+        });
+        return teams;
+      });
   }
 
-  // getUserName(userId: string): Promise<string> {
-  //   return axios
-  //     .get(`http://localhost:${this.port}/users/${userId}`, {})
-  //     .then((res) => res.data);
-  // }
-
   getUserName(userId: string): Promise<string> {
-    return new Promise((resolve) => {
-      resolve("Alon");
-    });
+    return axios
+      .get(`http://localhost:${this.port}/users/${userId}`, {})
+      .then((res) => res.data);
   }
 
   joinTeam(
-    userId: string,
     teamId: string,
+    userId: string,
     selectedNickname: string
   ): Promise<void> {
-    return new Promise((resolve) => {
-      resolve();
-    });
+    return axios.post(
+      `http://localhost:${this.port}/teams/${teamId}/join`,
+      null,
+      {
+        params: { userId, selectedNickname },
+      }
+    );
   }
 
-  // createTeam(userId: string, teamName: string, date: string): Promise<string> {
-  //   return axios
-  //     .post(`http://localhost:${this.port}/teams`, null, {
-  //       params: { userId, teamName, date },
-  //     })
-  //     .then((res) => {
-  //       return res.data;
-  //     });
-  // }
-
-  createTeam(userId: string, teamName: string, date: string): Promise<string> {
-    return new Promise((resolve) => {
-      resolve("123");
-    });
+  createTeam(adminId: string, teamName: string, date: string): Promise<string> {
+    return axios
+      .post(`http://localhost:${this.port}/teams`, null, {
+        params: { adminId, teamName, date },
+      })
+      .then((res) => {
+        return res.data;
+      });
   }
 }

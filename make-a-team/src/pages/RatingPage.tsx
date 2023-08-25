@@ -32,34 +32,36 @@ export default function RatingPage() {
 
   useEffect(() => {
     // TODO - add error handling for all http requests
-    apiService.getUserTeamSettings(userInfo?.id!, teamId).then((res) => {
-      setTeamSettings(res);
-    });
-  }, []);
+    userInfo?.id &&
+      apiService.getUserTeamSettings(userInfo?.id, teamId).then((res) => {
+        setTeamSettings(res);
+      });
+  }, [userInfo]);
 
   function togglePopup() {
     setIsOpen((prevIsOpen) => !prevIsOpen);
   }
 
-  function onSubmitRatingsClicked(numOfTeams: number) {
+  function onSubmitRatingsClicked() {
     setSubmitting(true);
     // TODO - make all of the api calls async
-    apiService
-      .submitRatings(userInfo?.id!, teamId, teamSettings.ratings)
-      .then(() => {
-        setSubmitting(false);
-        if (teamSettings.isUserAdminOfTeam) {
-          apiService.splitToTeams(teamId, numOfTeams).then((teams) => {
-            setTeams(teams);
-            togglePopup();
-          });
-        }
-      });
+    apiService.submitRatings(userInfo?.id!, teamSettings.ratings).then(() => {
+      setSubmitting(false);
+    });
   }
 
-  const setRating = (userId: Number, rating: number) => {
+  function onMakeATeamClicked(numOfTeams: number) {
+    apiService.splitToTeams(teamId, numOfTeams).then((teams) => {
+      setTeams(teams);
+      togglePopup();
+    });
+  }
+
+  const setRating = (subjectNickname: string, rating: number) => {
     let newRatings = [...teamSettings.ratings];
-    const indexToChange = newRatings.findIndex((o) => o.userId === userId);
+    const indexToChange = newRatings.findIndex(
+      (o) => o.subjectNickname === subjectNickname
+    );
     newRatings[indexToChange].rating = rating;
     setTeamSettings({ ...teamSettings, ratings: newRatings });
   };
@@ -89,6 +91,7 @@ export default function RatingPage() {
           isAdmin={teamSettings.isUserAdminOfTeam}
           isSubmitting={isSubmitting}
           onSubmitRatingsClicked={onSubmitRatingsClicked}
+          onMakeATeamClicked={onMakeATeamClicked}
         ></RatingSubmission>
         {isOpen && (
           <Popup

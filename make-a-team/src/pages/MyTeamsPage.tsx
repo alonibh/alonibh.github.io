@@ -25,8 +25,9 @@ export default function MyTeamsPage() {
   }, [userInfo?.id]);
 
   useEffect(() => {
-    apiService.getUserName(userInfo?.id!).then((name) => setName(name));
-  }, []);
+    userInfo?.id &&
+      apiService.getUserName(userInfo?.id!).then((name) => setName(name));
+  }, [userInfo?.id]);
 
   function joinTeam(teamCode: string) {
     apiService.isTeamMember(userInfo?.id!, teamCode).then((res) => {
